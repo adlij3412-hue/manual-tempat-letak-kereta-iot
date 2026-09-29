@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manual Pengguna – Sistem Tempat Letak Kereta IoT</title>
+<style>
+:root{--bg:#f4f7fa;--ink:#12283a;--mute:#4d6479;--line:#d3dee8;--acc:#0a7ea4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1d2e;--ink:#e6f1f8;--mute:#9db6c9;--line:#1f4360;--acc:#2fc4f0}}
+:root[data-theme="dark"]{--bg:#0b1d2e;--ink:#e6f1f8;--mute:#9db6c9;--line:#1f4360;--acc:#2fc4f0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:720px;margin:auto;padding:40px 20px 60px}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.15;margin:0 0 8px}
+h2{font-size:24px;margin:0 0 10px;color:var(--acc)}
+section{border-top:1px solid var(--line);padding:26px 0}
+p,li{max-width:65ch}
+.sub{color:var(--mute);margin:0}
+ol,ul{padding-left:22px}
+li{margin-bottom:6px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.wrap{overflow-x:auto}
+.sim{border:1px solid var(--acc);border-radius:10px;padding:16px;margin-top:12px}
+.slots{display:flex;gap:8px;margin-bottom:12px}
+.slot{flex:1;text-align:center;padding:10px 4px;border-radius:8px;border:2px solid #1a8a4a;color:#1a8a4a;font-weight:700;font-size:15px}
+.slot.full{border-color:#c0392b;color:#c0392b}
+.lcd{font:600 16px/1.4 ui-monospace,Consolas,monospace;background:#1f3d1f;color:#b6ff9a;padding:10px 14px;border-radius:6px;white-space:pre;overflow-x:auto}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+button{font:inherit;font-weight:700;padding:9px 14px;border-radius:8px;border:1px solid var(--acc);background:transparent;color:var(--acc);cursor:pointer}
+button:hover,button:focus-visible{background:var(--acc);color:var(--bg);outline:none}
+#log{font-size:15px;color:var(--mute);min-height:1.7em;margin:6px 0 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Manual Pengguna: Sistem Tempat Letak Kereta IoT</h1>
+<p class="sub">Adli Dzulkarnain bin Abdul Jamil · Penyelia: Mafuzah Nor binti Radzi</p>
+
+<section>
+<h2>Pengenalan</h2>
+<p>Sistem ini membuka pintu masuk secara automatik apabila kad RFID berdaftar diimbas. Tiga penderia IR memantau slot tempat letak kereta, dan status dihantar ke pangkalan data Firebase serta Telegram.</p>
+</section>
+
+<section>
+<h2>Cara masuk</h2>
+<ol>
+<li>Pasang kuasa dan tunggu LCD menyala.</li>
+<li>Bawa kenderaan anda ke pintu masuk.</li>
+<li>Imbas kad RFID pada pengimbas.</li>
+<li>Kad sah: palang terbuka. Kad tidak sah: palang kekal tertutup dan amaran dihantar ke Telegram.</li>
+<li>Letakkan kenderaan di slot yang kosong.</li>
+</ol>
+</section>
+
+<section>
+<h2>Cara keluar</h2>
+<ol>
+<li>Bawa kenderaan anda ke pintu keluar.</li>
+<li>Palang terbuka secara automatik.</li>
+<li>Bilangan slot kosong dikemas kini.</li>
+</ol>
+<p>Jika semua slot penuh, pintu masuk tidak akan dibuka.</p>
+</section>
+
+<section>
+<h2>Mesej Telegram</h2>
+<div class="wrap"><table>
+<tr><td>✅ Akses Dibenarkan</td><td>Kad sah, palang terbuka</td></tr>
+<tr><td>⚠️ Amaran Pencerobohan</td><td>Kad tidak berdaftar, palang tertutup</td></tr>
+<tr><td>🚗 Kenderaan Keluar</td><td>Palang terbuka, slot dikemas kini</td></tr>
+<tr><td>🚫 Tempat Letak Kereta Penuh</td><td>0 slot kosong, akses dihalang</td></tr>
+<tr><td>📊 Laporan Status Slot</td><td>Status Slot 1, 2 dan 3</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>Cuba simulasi</h2>
+<p>Tekan butang untuk melihat cara sistem berfungsi. Ini hanya demo, bukan sambungan ke prototaip sebenar.</p>
+<div class="sim">
+<div class="slots" id="slots"></div>
+<div class="lcd" id="lcd" aria-live="polite"></div>
+<div class="btns">
+<button id="ok">Imbas kad sah</button>
+<button id="no">Imbas kad tidak sah</button>
+<button id="out">Kenderaan keluar</button>
+<button id="rst">Set semula</button>
+</div>
+<p id="log" aria-live="polite"></p>
+</div>
+</section>
+
+<section>
+<h2>Masalah lazim</h2>
+<ul>
+<li>Palang tidak terbuka: semak sama ada tempat letak kereta penuh atau kad belum didaftarkan.</li>
+<li>Tiada mesej Telegram: semak sambungan rangkaian WiFi.</li>
+<li>Status slot salah: bersihkan penderia IR.</li>
+<li>LCD tidak menyala: semak bekalan kuasa.</li>
+</ul>
+</section>
+</main>
+<script>
+(function(){
+var s=[0,0,0],E=function(i){return document.getElementById(i)};
+function free(){return s.filter(function(x){return !x}).length}
+function draw(l1,msg){
+ E('slots').innerHTML=s.map(function(x,i){return '<div class="slot'+(x?' full':'')+'">Slot '+(i+1)+'<br>'+(x?'Berisi':'Kosong')+'</div>'}).join('');
+ E('lcd').textContent=(l1||'Sistem Sedia')+'\nSlot kosong: '+free();
+ if(msg!==undefined)E('log').textContent='Telegram: '+msg;
+}
+E('ok').onclick=function(){var i=s.indexOf(0);
+ if(i<0){draw('Tempat Penuh','🚫 Tempat Letak Kereta Penuh, akses dihalang');return}
+ s[i]=1;draw('Akses Dibenarkan','✅ Akses Dibenarkan, palang terbuka, baki slot: '+free())};
+E('no').onclick=function(){draw('Kad Tidak Sah','⚠️ Amaran Pencerobohan, palang kekal tertutup')};
+E('out').onclick=function(){var i=s.lastIndexOf(1);
+ if(i<0){draw('Tiada Kenderaan','Tiada kenderaan untuk dikeluarkan');return}
+ s[i]=0;draw('Sila Keluar','🚗 Kenderaan Keluar, slot dikemas kini ('+free()+' kosong)')};
+E('rst').onclick=function(){s=[0,0,0];draw('','')};
+draw();
+})();
+</script>
+</body>
+</html>
